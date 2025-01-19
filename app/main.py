@@ -5,6 +5,7 @@ from rich import print
 from dotenv import load_dotenv
 
 from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 
@@ -18,6 +19,18 @@ class Links(BaseModel):
 
 class GridLinks(BaseModel):
     product_grid_links: list = Field(description="The list of links containing the Products page")
+
+# llm = ChatOllama(
+    # model="llama3.1",
+    # temperature=0,
+    # base_url="https://11434-01j710tcmngbgrg8x0qjm1pazs.cloudspaces.litng.ai"
+    # # other params...
+    # )
+llm = ChatOpenAI(
+    model="gpt-4o",
+    temperature=0,
+    # other params...
+    )
 
 def chunk_list(input_list, chunk_size):
     """Split a list into smaller chunks of a given size."""
@@ -43,12 +56,7 @@ async def generate_product_grid_pages(href_links: List[str]) -> List[str]:
     # Your LLM-based implementation here
     batch_size = 10
     product_grid_pages = []
-    llm = ChatOllama(
-    model="llama3.1",
-    temperature=0,
-    base_url="https://11434-01j710tcmngbgrg8x0qjm1pazs.cloudspaces.litng.ai"
-    # other params...
-    )
+
     prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -75,12 +83,7 @@ async def generate_product_pages(grid_page_urls: List[str]) -> List[str]:
     # Your LLM-based implementation here
     batch_size = 10
     product_grid_pages = []
-    llm = ChatOllama(
-    model="llama3.1",
-    temperature=0,
-    base_url="https://11434-01j710tcmngbgrg8x0qjm1pazs.cloudspaces.litng.ai"
-    # other params...
-    )
+
     prompt = ChatPromptTemplate.from_messages(
     [
         (
