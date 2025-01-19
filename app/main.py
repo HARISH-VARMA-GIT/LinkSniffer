@@ -1,15 +1,17 @@
 import asyncio
 import aiohttp
 from typing import List, Dict
-
-from url_list import website_urls
-from dynamic_scraper_with_href_robust import DynamicScraper
+from rich import print
+from dotenv import load_dotenv
 
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 
-from rich import print
+from helpers.url_list import website_urls
+from utils.dynamic_scraper_with_href_robust import DynamicScraper
+
+load_dotenv()
 
 class Links(BaseModel):
     product_links: list = Field(description="The list of links containing only the product links")
