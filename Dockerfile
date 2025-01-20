@@ -1,7 +1,7 @@
 # Use the Ubuntu 22.04 base image
 FROM ubuntu:22.04
 
-# Add Python 3.8 to the image
+# Add Python 3.10 to the image
 FROM python:3.10
 
 
