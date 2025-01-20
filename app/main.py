@@ -36,15 +36,15 @@ async def get_all_href_links(session: aiohttp.ClientSession, url: str) -> List[s
 
     links = scraper.scrape_website(
         url=url,
-        max_scrolls=os.getenv("SCROLL_LIMIT",10),
-        max_links=os.getenv("PRODUCT_LINKS_LIMIT")  # Set to None for unlimited scrolling
+        max_scrolls=int(os.getenv("SCROLL_LIMIT",10)),
+        max_links=int(os.getenv("PRODUCT_LINKS_LIMIT",None))  # Set to None for unlimited scrolling
     )
 
     return list(links)
 
  # Classify the links that redirect to product grid pages
 async def generate_product_grid_pages(href_links: List[str]) -> List[str]:
-    batch_size = os.getenv("BATCH_SIZE_PRODUCT_GRID_LINKS")
+    batch_size = int(os.getenv("BATCH_SIZE_PRODUCT_GRID_LINKS"))
     product_grid_pages = []
     prompt = Prompts.grid_page_prompt
     structured_llm = llm.with_structured_output(GridLinks)
@@ -63,7 +63,7 @@ async def generate_product_grid_pages(href_links: List[str]) -> List[str]:
 
  # Classify the links that redirect to product pages
 async def generate_product_pages(grid_page_urls: List[str]) -> List[str]:
-    batch_size = os.getenv("BATCH_SIZE_PRODUCT_LINKS")
+    batch_size = int(os.getenv("BATCH_SIZE_PRODUCT_LINKS"))
     product_grid_pages = []
     prompt = Prompts.product_page_prompt
     structured_llm = llm.with_structured_output(Links)
@@ -90,13 +90,18 @@ async def generate_mapping_file(website_to_product_mapping: Dict[str, List[str]]
 
 
 # Orchestrating all functions asynchronously
-async def process_website(session: aiohttp.ClientSession, url: str) -> List[str]:
+async def process_website(session: aiohttp.ClientSession, url: str, max_links_per_stage: int = 10) -> List[str]:
     try:
         print(GREEN+"Getting all href Links"+RESET)
         href_links = await get_all_href_links(session, url)
+        if max_links_per_stage is not None:
+            href_links = href_links[:max_links_per_stage]
 
         print(GREEN+"CLassifying grid Links"+RESET)
         product_grid_pages = await generate_product_grid_pages(href_links)
+        if max_links_per_stage is not None:
+            product_grid_pages = product_grid_pages[:max_links_per_stage]
+            print(product_grid_pages)
         
         print(GREEN+"Extracting Product Links"+RESET)
         all_grid_page_links = []
@@ -106,12 +111,18 @@ async def process_website(session: aiohttp.ClientSession, url: str) -> List[str]
                 print(YELLOW+f"Processing grid URL: {grid_url}"+RESET)
 
                 grid_links = await get_all_href_links(session, grid_url)
+                if max_links_per_stage is not None:
+                    grid_links = grid_links[:max_links_per_stage]
+
                 all_grid_page_links.extend(grid_links)  
 
                 print(YELLOW+f"Found {len(grid_links)} links from {grid_url}"+RESET)
                 
-        print(GREEN+"Classifying Product Links"+RESET)
-        product_pages = await generate_product_pages(all_grid_page_links)
+        console.print("Classifying Product Links",style="bold green")
+        if max_links_per_stage is not None:
+            product_pages = await generate_product_pages(all_grid_page_links[:max_links_per_stage])
+        else:
+            product_pages = await generate_product_pages(all_grid_page_links)
 
         return product_pages
     except Exception as e:
