@@ -123,6 +123,8 @@ Following are the features that are encouraged for contributing
 
 4. Prompt Optimization and Refinement: Improve the prompt structure and its handling to achieve more accurate, contextually relevant, and efficient responses from the system.
 
+5. AI Agents Integration: Implement and integrate any AI agent frameworks, such as CrewAI, AutoGen, LangGraph, or PhiData, to enable intelligent classification and management of product links.
+
 ---
 
 **Happy Crawling with LinkSniffer!** 
