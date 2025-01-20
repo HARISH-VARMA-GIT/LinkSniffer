@@ -5,3 +5,4 @@ selenium
 rich
 langchain-openai
 python-dotenv
+langchain-nvidia-ai-endpoints
