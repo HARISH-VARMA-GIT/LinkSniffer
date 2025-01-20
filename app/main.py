@@ -1,8 +1,10 @@
 import asyncio
 import aiohttp
 import os
+import sys
 from typing import List, Dict
 from rich import print
+from rich.console import Console
 from dotenv import load_dotenv
 
 from helpers.url_list import website_urls
@@ -11,11 +13,7 @@ from utils.dynamic_scraper import DynamicScraper
 from utils.llm_manager import get_llm,Prompts
 
 load_dotenv()
-
-GREEN = '\033[32m'
-YELLOW = '\033[33m' 
-RED = '\033[31m'
-RESET = '\033[97m'
+console = Console()
 
 llm = get_llm()
 
@@ -92,23 +90,23 @@ async def generate_mapping_file(website_to_product_mapping: Dict[str, List[str]]
 # Orchestrating all functions asynchronously
 async def process_website(session: aiohttp.ClientSession, url: str, max_links_per_stage: int = 10) -> List[str]:
     try:
-        print(GREEN+"Getting all href Links"+RESET)
+        console.print("Getting all href Links",style="bold green")
         href_links = await get_all_href_links(session, url)
         if max_links_per_stage is not None:
             href_links = href_links[:max_links_per_stage]
 
-        print(GREEN+"CLassifying grid Links"+RESET)
+        console.print("CLassifying grid Links",style="bold green")
         product_grid_pages = await generate_product_grid_pages(href_links)
         if max_links_per_stage is not None:
             product_grid_pages = product_grid_pages[:max_links_per_stage]
             print(product_grid_pages)
         
-        print(GREEN+"Extracting Product Links"+RESET)
+        console.print("Extracting Product Links",style="bold green")
         all_grid_page_links = []
 
         for chunk in chunk_list(product_grid_pages, 40):
             for grid_url in chunk:
-                print(YELLOW+f"Processing grid URL: {grid_url}"+RESET)
+                console.print(f"Processing grid URL: {grid_url}",style="yellow")
 
                 grid_links = await get_all_href_links(session, grid_url)
                 if max_links_per_stage is not None:
@@ -116,7 +114,7 @@ async def process_website(session: aiohttp.ClientSession, url: str, max_links_pe
 
                 all_grid_page_links.extend(grid_links)  
 
-                print(YELLOW+f"Found {len(grid_links)} links from {grid_url}"+RESET)
+                console.print(f"Found {len(grid_links)} links from {grid_url}",style="yellow")
                 
         console.print("Classifying Product Links",style="bold green")
         if max_links_per_stage is not None:
@@ -126,13 +124,13 @@ async def process_website(session: aiohttp.ClientSession, url: str, max_links_pe
 
         return product_pages
     except Exception as e:
-        print(RED+f"Error processing {url}: {e}"+RESET)
+        console.print(f"Error processing {url}: {e}",style = "red")
         return []
 
 async def main(website_urls: List[str], output_file: str):
     async with aiohttp.ClientSession() as session:
-        print(YELLOW+"Processing Websites"+RESET)
-        tasks = [process_website(session, url) for url in website_urls]
+        console.print("Processing Websites",style = "green")
+        tasks = [process_website(session, url,max_links_per_stage=int(os.getenv("MAX_LINKS_PER_STAGE",None))) for url in website_urls]
         results = await asyncio.gather(*tasks)
 
         website_to_product_mapping = {
@@ -140,6 +138,7 @@ async def main(website_urls: List[str], output_file: str):
         }
 
         await generate_mapping_file(website_to_product_mapping, output_file)
+        console.print("Output Text File is generated",style="magenta")
 
 if __name__ == "__main__":
     urls = website_urls
