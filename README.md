@@ -1,4 +1,4 @@
-# LinkSniffer 🌐
+# LinkSniffer 🐶
 
 **An AI-powered crawling engine designed to efficiently fetch and aggregate product URLs from multiple e-commerce websites.**
 
