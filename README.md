@@ -128,5 +128,3 @@ Following are the features that are encouraged for contributing
 ---
 
 **Happy Crawling with LinkSniffer!** 
-
----
