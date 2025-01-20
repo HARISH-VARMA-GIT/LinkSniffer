@@ -32,7 +32,6 @@ RUN google-chrome --version
 # Set the working directory inside the image to /app
 WORKDIR /project
 
-
 # Copy the requirements.txt file to /app
 COPY requirements.txt .
 
@@ -41,7 +40,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the Python script 'app.py' to /app
 COPY . .
-
 
 # Specify the default command to execute when the container starts
 ENTRYPOINT [ "python", "app/main.py"]
