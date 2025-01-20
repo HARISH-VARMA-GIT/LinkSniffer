@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+website_product_mapping.txt
 
 # C extensions
 *.so
