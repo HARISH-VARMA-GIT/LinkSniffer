@@ -2,3 +2,4 @@
 LICENSE
 .gitignore
 README.md
+.env.example
