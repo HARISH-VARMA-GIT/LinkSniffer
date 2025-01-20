@@ -3,6 +3,7 @@ import os
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
 
 from dotenv import load_dotenv
@@ -29,10 +30,13 @@ class Prompts:
     )
 
 def get_llm():
-    if os.getenv("SET_OPENAI_MODELS"):
+    if os.getenv("SET_OPENAI_MODELS")=="True":
         llm = ChatOpenAI(model=os.getenv("OPENAI_MODEL"),temperature=0,api_key= os.getenv("OPENAI_API_KEY"))
         return llm
-    elif os.getenv("SET_OLLAMA"):
+    elif os.getenv("SET_OLLAMA")=="True":
         llm = ChatOllama(model=os.getenv("OLLAMA_MODEL"),temperature=0,base_url= os.getenv("OLLAMA_BASE_URL"))
+        return llm
+    elif os.getenv("SET_NVIDIA")=="True":
+        llm = ChatNVIDIA(model=os.getenv("NIM_MODEL"),temperature=0,api_key= os.getenv("NIM_API_KEY"))
         return llm
     
