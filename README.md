@@ -2,7 +2,6 @@
 
 **An AI-powered crawling engine designed to efficiently fetch and aggregate product URLs from multiple e-commerce websites.**
 
----
 
 ## Table of Contents
 - [Workflow](#workflow)
@@ -11,7 +10,6 @@
 - [Usage](#usage)
 - [Contributing and Future Work](#contributing-and-future-work)
 
----
 
 ## Workflow
 
@@ -24,7 +22,6 @@ flowchart LR
     E --> F[Generate output text file with product links and respective websites]
 ```
 
----
 
 ## Features
 
@@ -32,7 +29,6 @@ flowchart LR
 - **Efficient Workflow:** Streamlined asynchronous pipeline for extracting and aggregating product URLs.
 - **Scalable Infrastructure:** Supports running locally, in Docker containers, or with GPUs for LLMs.
 
----
 
 ## Installation
 
@@ -101,7 +97,6 @@ uv pip install -r requirements.txt
 uv run app/main.py
 ```
 
----
 
 ## Usage
 
@@ -109,7 +104,6 @@ uv run app/main.py
 2. Run the crawler engine.  
 3. The system will output a text file containing classified product URLs grouped by their respective websites.  
 
----
 
 ## Contributing and Future Work
 
